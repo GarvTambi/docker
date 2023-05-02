@@ -1,11 +1,16 @@
-# syntax=docker/dockerfile:1
-FROM busybox:latest
-COPY --chmod=755 <<EOF /app/run.sh
-#!/bin/sh
-while true; do
-  echo -ne "The time is now $(date +%T)\\r"
-  sleep 1
-done
-EOF
+# Use an existing image as a base
+FROM python:3.9-slim-buster
 
-ENTRYPOINT /app/run.sh
+# Set the working directory for the application
+WORKDIR /app
+
+# Copy the requirements files to the container
+COPY requirements.txt requirements.txt
+
+# Install any necessary dependencies
+RUN pip3 install -r requirements.txt
+
+# Copy the application files to the container
+COPY . .
+
+CMD ["python3", "-m" , "flask", "run", "--host=0.0.0.0"]
